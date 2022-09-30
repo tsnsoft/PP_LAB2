@@ -94,7 +94,7 @@ public class KDK10_LAB2 {
                 System.out.println();
             }
 
-            System.out.println("После фильтрации:");
+            System.out.println("После сортировки:");
             table = statement.executeQuery("SELECT * FROM TV ORDER BY Id DESC");
 
             while (table.next()) {
