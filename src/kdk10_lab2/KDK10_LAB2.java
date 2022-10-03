@@ -31,7 +31,7 @@ public class KDK10_LAB2 {
             // Выполнение запроса к базе данных, получение набора данных
             ResultSet table = statement.executeQuery("SELECT * FROM my_books");
 
-            System.out.println("Начальная БД:");
+            System.out.println("Начальная таблица БД:");
             table.first(); // Выведем имена полей
             for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
                 System.out.print(table.getMetaData().getColumnName(j) + "\t\t");
@@ -45,15 +45,17 @@ public class KDK10_LAB2 {
                 }
                 System.out.println();
             }
+            System.out.println();
 
             Scanner sc = new Scanner(System.in);
-            System.out.println("Введите параметры нового поля таблицы:");
-            System.out.print("name: ");
+            System.out.println("Введите параметры новой записи для таблицы данных:");
+            System.out.print("Название книги: ");
             String scannedName = sc.nextLine();
-            System.out.print("author: ");
+            System.out.print("Автор: ");
             String scannedAuthor = sc.nextLine();
+            System.out.println();
 
-            System.out.println("После добавления:");
+            System.out.println("После добавления строки:");
             statement.execute("INSERT my_books(name, author) VALUES ('" + scannedName + "', '" + scannedAuthor + "')");
             table = statement.executeQuery("SELECT * FROM my_books");
 
@@ -63,13 +65,17 @@ public class KDK10_LAB2 {
                 }
                 System.out.println();
             }
+            System.out.println();
 
             System.out.println("Строку с каким id хотите удалить?");
             System.out.print("id: ");
-            int scannedId = sc.nextInt();
-            statement.execute("DELETE FROM my_books WHERE Id = " + scannedId);
+            String scannedId = sc.nextLine();
+            if (!scannedId.equals("")) {
+                statement.execute("DELETE FROM my_books WHERE id = " + scannedId);
+            }
+            System.out.println();
 
-            System.out.println("После удаления:");
+            System.out.println("Таблица после удаления записи:");
             table = statement.executeQuery("SELECT * FROM my_books");
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
@@ -77,19 +83,26 @@ public class KDK10_LAB2 {
                 }
                 System.out.println();
             }
-            sc.nextLine();
+            System.out.println();
 
-            System.out.println("Какую строку вы хотите изменить?");
+            System.out.println("Какую запись вы хотите изменить?");
             System.out.print("id: ");
-            String id = sc.nextLine();
-            System.out.print("name: ");
+            scannedId = sc.nextLine();
+            System.out.println("Теперь вводите новые данные для данной записи");
+            System.out.print("Название книги: ");
             String scannedNameUp = sc.nextLine();
-            System.out.print("author: ");
+            System.out.print("Автор: ");
             String scannedAuthorUp = sc.nextLine();
-            statement.executeUpdate("UPDATE my_books SET name = '" + scannedNameUp + "' WHERE Id = " + id);
-            statement.executeUpdate("UPDATE my_books SET author = '" + scannedAuthorUp + "' WHERE id = " + id);
-            System.out.println("После изменения:");
+            if (!scannedId.equals("")) {
+                statement.executeUpdate("UPDATE my_books SET name = '" + scannedNameUp + "' WHERE id = " + scannedId);
+                statement.executeUpdate("UPDATE my_books SET author = '" + scannedAuthorUp + "' WHERE id = " + scannedId);
+            }
+            System.out.println("Данные таблицы после изменения:");
             table = statement.executeQuery("SELECT * FROM my_books");
+            System.out.println();
+
+            System.out.print("Введите фрагмент названия для фильтрации: ");
+            String filter = sc.nextLine();
 
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
@@ -97,9 +110,11 @@ public class KDK10_LAB2 {
                 }
                 System.out.println();
             }
+            System.out.println();
 
-            System.out.println("После сортировки:");
-            table = statement.executeQuery("SELECT * FROM my_books ORDER BY name DESC");
+            System.out.println("Данные таблицыс фильтром и сортировкой:");
+            table = statement.executeQuery("SELECT * FROM my_books WHERE name like '%"
+                    + filter + "%' ORDER BY name DESC");
 
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
@@ -126,8 +141,7 @@ public class KDK10_LAB2 {
             } // Отключение от базы данных
 
         } catch (Exception e) {
-            System.err.println("Error accessing database!");
-            e.printStackTrace();
+            System.err.println("Ошибка доступа к базе или вы вводите не то, что надо !!!");
         }
     }
 
