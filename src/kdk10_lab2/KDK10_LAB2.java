@@ -1,5 +1,6 @@
 package kdk10_lab2;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,12 +13,13 @@ public class KDK10_LAB2 {
     public static void main(String[] args) {
         try {
             // Адрес нашей базы данных "tsn_demo" на локальном компьютере (localhost)
-            String url = "jdbc:mysql://localhost:3306/kdk10_lab2?useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+            String url = "jdbc:mysql://" + InetAddress.getLocalHost().getHostName() + ".local"
+                    + ":3306/tsn_demo?serverTimezone=UTC&useSSL=false";
 
             // Создание свойств соединения с базой данных
             Properties authorization = new Properties();
             authorization.put("user", "root"); // Зададим имя пользователя БД
-            authorization.put("password", "root"); // Зададим пароль доступа в БД
+            authorization.put("password", "PassW0Rd+"); // Зададим пароль доступа в БД
 
             // Создание соединения с базой данных
             Connection connection = DriverManager.getConnection(url, authorization);
@@ -27,7 +29,7 @@ public class KDK10_LAB2 {
                     ResultSet.CONCUR_UPDATABLE);
 
             // Выполнение запроса к базе данных, получение набора данных
-            ResultSet table = statement.executeQuery("SELECT * FROM TV ");
+            ResultSet table = statement.executeQuery("SELECT * FROM my_books");
 
             System.out.println("Начальная БД:");
             table.first(); // Выведем имена полей
@@ -46,14 +48,14 @@ public class KDK10_LAB2 {
 
             Scanner sc = new Scanner(System.in);
             System.out.println("Введите параметры нового поля таблицы:");
-            System.out.print("name - ");
+            System.out.print("name: ");
             String scannedName = sc.nextLine();
-            System.out.print("manufacturer - ");
-            String scannedManufacturer = sc.nextLine();
-            
+            System.out.print("author: ");
+            String scannedAuthor = sc.nextLine();
+
             System.out.println("После добавления:");
-            statement.execute("INSERT TV(name, manufacturer) VALUES ('" + scannedName + "', '" + scannedManufacturer + "')");
-            table = statement.executeQuery("SELECT * FROM TV");
+            statement.execute("INSERT my_books(name, author) VALUES ('" + scannedName + "', '" + scannedAuthor + "')");
+            table = statement.executeQuery("SELECT * FROM my_books");
 
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
@@ -63,12 +65,12 @@ public class KDK10_LAB2 {
             }
 
             System.out.println("Строку с каким id хотите удалить?");
-            System.out.print("id - ");
+            System.out.print("id: ");
             int scannedId = sc.nextInt();
-            statement.execute("DELETE FROM TV WHERE Id = " + scannedId);
-            
+            statement.execute("DELETE FROM my_books WHERE Id = " + scannedId);
+
             System.out.println("После удаления:");
-            table = statement.executeQuery("SELECT * FROM TV");
+            table = statement.executeQuery("SELECT * FROM my_books");
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
                     System.out.print(table.getString(j) + "\t\t");
@@ -76,16 +78,18 @@ public class KDK10_LAB2 {
                 System.out.println();
             }
             sc.nextLine();
-            
-            System.out.println("На что изменить в первую строку?");
-            System.out.print("name - ");
+
+            System.out.println("Какую строку вы хотите изменить?");
+            System.out.print("id: ");
+            String id = sc.nextLine();
+            System.out.print("name: ");
             String scannedNameUp = sc.nextLine();
-            System.out.print("manufacturer - ");
-            String scannedManufacturerUp = sc.nextLine();
-            statement.executeUpdate("UPDATE TV SET Name = '" + scannedNameUp + "' WHERE Id = 1");
-            statement.executeUpdate("UPDATE TV SET Manufacturer = '" + scannedManufacturerUp + "' WHERE id = 1");
+            System.out.print("author: ");
+            String scannedAuthorUp = sc.nextLine();
+            statement.executeUpdate("UPDATE my_books SET name = '" + scannedNameUp + "' WHERE Id = " + id);
+            statement.executeUpdate("UPDATE my_books SET author = '" + scannedAuthorUp + "' WHERE id = " + id);
             System.out.println("После изменения:");
-            table = statement.executeQuery("SELECT * FROM TV");
+            table = statement.executeQuery("SELECT * FROM my_books");
 
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
@@ -95,7 +99,7 @@ public class KDK10_LAB2 {
             }
 
             System.out.println("После сортировки:");
-            table = statement.executeQuery("SELECT * FROM TV ORDER BY Id DESC");
+            table = statement.executeQuery("SELECT * FROM my_books ORDER BY name DESC");
 
             while (table.next()) {
                 for (int j = 1; j <= table.getMetaData().getColumnCount(); j++) {
